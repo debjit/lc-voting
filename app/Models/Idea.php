@@ -12,9 +12,13 @@ class Idea extends Model
 {
     use HasFactory, Sluggable;
 
-    const PAGINATION_COUNT = 10;
-
     protected $guarded = [];
+    protected $perPage = 10;
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 
     /**
      * Return the sluggable configuration array for this model.
