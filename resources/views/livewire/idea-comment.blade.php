@@ -7,6 +7,11 @@
         </div>
         <div class="w-full md:mx-4">
             <div class="text-gray-600">
+                @admin
+                    @if ($comment->spam_reports > 0)
+                        <div class="text-red mb-2">Spam Reports: {{ $comment->spam_reports }}</div>
+                    @endif
+                @endadmin
                 {{ $comment->body }}
             </div>
 
@@ -21,6 +26,7 @@
                     @endif
                     <div>{{ $comment->created_at->diffForHumans() }}</div>
                 </div>
+                @auth
                 <div
                     class="flex items-center space-x-2"
                     x-data="{ isOpen: false }"
@@ -39,11 +45,69 @@
                             @click.away="isOpen = false"
                             @keydown.escape.window="isOpen = false"
                         >
-                            <li><a href="#" class="hover:bg-gray-100 block transition duration-150 ease-in px-5 py-3">Mark as Spam</a></li>
-                            <li><a href="#" class="hover:bg-gray-100 block transition duration-150 ease-in px-5 py-3">Delete Post</a></li>
+                            @can('update', $comment)
+                            <li>
+                                <a
+                                    href="#"
+                                    @click.prevent="
+                                        isOpen = false
+                                        Livewire.emit('setEditComment', {{ $comment->id }})
+                                    "
+                                    class="hover:bg-gray-100 block transition duration-150 ease-in px-5 py-3"
+                                >
+                                    Edit Comment
+                                </a>
+                            </li>
+                            @endcan
+
+                            @can('delete', $comment)
+                            <li>
+                                <a
+                                    href="#"
+                                    @click.prevent="
+                                        isOpen = false
+                                        Livewire.emit('setDeleteComment', {{ $comment->id }})
+                                    "
+                                    class="hover:bg-gray-100 block transition duration-150 ease-in px-5 py-3"
+                                >
+                                    Delete Comment
+                                </a>
+                            </li>
+                            @endcan
+
+                            <li>
+                                <a
+                                    href="#"
+                                    @click.prevent="
+                                        isOpen = false
+                                        Livewire.emit('setMarkAsSpamComment', {{ $comment->id }})
+                                    "
+                                    class="hover:bg-gray-100 block transition duration-150 ease-in px-5 py-3"
+                                >
+                                    Mark as Spam
+                                </a>
+                            </li>
+
+                            @admin
+                                @if ($comment->spam_reports > 0)
+                                <li>
+                                    <a
+                                        href="#"
+                                        @click.prevent="
+                                            isOpen = false
+                                            Livewire.emit('setMarkAsNotSpamComment', {{ $comment->id }})
+                                        "
+                                        class="hover:bg-gray-100 block transition duration-150 ease-in px-5 py-3"
+                                    >
+                                        Not Spam
+                                    </a>
+                                </li>
+                                @endif
+                            @endadmin
                         </ul>
                     </div>
                 </div>
+                @endauth
             </div>
         </div>
     </div>
